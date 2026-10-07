@@ -1,0 +1,535 @@
+/* ============================================================
+   Portfolio — styles.css
+   Sistema de diseño según DESIGN-001 (v1, cerrado):
+     §1 Color · §2 Tipografía · §3 Espacio y medidas
+     §4 Componentes · §5 Movimiento · §6 Accesibilidad
+   Acento por defecto: Violeta (#6D28D9).
+   ============================================================ */
+
+/* ============================================================
+   1. TOKENS — Custom properties
+   ============================================================ */
+:root {
+  /* --- §1 Color · Neutros --- */
+  --bg: #FFFFFF;            /* Fondo de página */
+  --ink: #0A0A0A;           /* Texto principal, titulares */
+  --ink-2: #404040;         /* Texto de párrafo largo */
+  --muted: #595959;         /* Metadatos, etiquetas, texto secundario */
+  --surface: #F5F5F5;       /* Chips, píldoras, botones secundarios */
+  --surface-2: #EDEDED;     /* Hover de lo anterior */
+  --border: #E5E5E5;        /* Separadores y bordes */
+  --border-strong: #D4D4D4; /* Borde en hover, subrayados discretos */
+  --btn: #171717;           /* Botón primario */
+  --btn-ink: #FAFAFA;       /* Texto del botón primario */
+
+  /* --- §1 Color · Acento (configurable, por defecto Violeta) ---
+     Para cambiar el acento basta sobrescribir --accent y
+     --accent-soft, o poner en <html> el atributo data-accent
+     con uno de los valores: azul | verde | naranja | rosa | amarillo
+     (ver bloque "Variantes de acento" más abajo). */
+  --accent: #6D28D9;
+  --accent-soft: #EDE9FE;
+
+  /* --- §1 Color · Semánticos (independientes del acento) --- */
+  --ok: #047857;   /* Vigente */
+  --warn: #A16207; /* Caduca pronto */
+  --bad: #B91C1C;  /* Caducada */
+
+  /* --- §2 Tipografía · Familias --- */
+  --font-text: "Geist", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* --- §2 Tipografía · Pesos (nunca 700) --- */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* --- §2 Tipografía · Tamaños e interlineados --- */
+  --text-hero: clamp(40px, 6vw, 64px); /* Titular de portada */
+  --leading-hero: 1.05;
+  --text-lead: 20px;                   /* Entradilla de portada */
+  --leading-lead: 30px;
+  --text-body: 17px;                   /* Texto corrido */
+  --leading-body: 28px;
+  --text-h2: 28px;                     /* Título de sección */
+  --leading-h2: 1.2;
+  --text-project-featured: 24px;       /* Nombre de proyecto destacado */
+  --leading-project-featured: 1.2;
+  --text-project: 18px;                /* Nombre de proyecto en rejilla */
+  --leading-project: 1.3;
+  --text-summary: 15px;                /* Resumen en rejilla */
+  --leading-summary: 24px;
+  --text-meta: 13px;                   /* Metadatos (monoespaciada) */
+  --leading-meta: 20px;
+  --text-eyebrow: 12px;                /* Antetítulo de sección (mono, mayús.) */
+  --tracking-eyebrow: 0.12em;
+
+  /* --- §3 Espacio y medidas (móvil primero) --- */
+  --max-content: 1120px; /* Ancho máximo de contenido */
+  --max-reading: 720px;  /* Ancho máximo de lectura */
+  --gutter: 24px;        /* Margen lateral (móvil) */
+  --section-gap: 64px;   /* Separación entre secciones (móvil) */
+  --topbar-h: 56px;      /* Alto de la barra superior */
+
+  /* --- §3 Radios --- */
+  --radius-sm: 8px;    /* Botones, chips */
+  --radius-md: 12px;   /* Bloques */
+  --radius-lg: 16px;   /* Marcos de imagen */
+  --radius-full: 9999px; /* Píldoras (radio completo) */
+
+  /* --- §5 Movimiento --- */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --dur-fast: 150ms; /* Cambios de color en interactivos */
+  --dur-mid: 200ms;  /* Identidad en la barra superior */
+  --dur-slow: 400ms; /* Entrada escalonada de la portada */
+  --stagger: 60ms;   /* Diferencia entre elementos de la portada */
+}
+
+/* §3 — A partir de 900px: márgenes y separaciones de escritorio */
+@media (min-width: 900px) {
+  :root {
+    --gutter: 48px;
+    --section-gap: 96px;
+  }
+}
+
+/* ============================================================
+   1bis. VARIANTES DE ACENTO (DESIGN-001 §1)
+   El acento es configurable: poner data-accent="…" en <html>.
+   Los semánticos (ok/warn/bad) NO cambian con el acento.
+   ============================================================ */
+html[data-accent="azul"]     { --accent: #1D4ED8; --accent-soft: #DBEAFE; }
+html[data-accent="verde"]    { --accent: #047857; --accent-soft: #D1FAE5; }
+html[data-accent="naranja"]  { --accent: #C2410C; --accent-soft: #FFEDD5; }
+html[data-accent="rosa"]     { --accent: #BE185D; --accent-soft: #FCE7F3; }
+html[data-accent="amarillo"] { --accent: #A16207; --accent-soft: #FEF3C7; }
+
+/* ============================================================
+   2. BASE — Reset mínimo y tipografía de texto corrido
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-weight: var(--weight-regular);
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* La monoespaciada se reserva para DATOS: fechas, tecnologías,
+   contadores, etiquetas de estado y correo (DESIGN-001 §2). */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+}
+
+/* ============================================================
+   6. ACCESIBILIDAD (decisiones de sistema)
+   ============================================================ */
+
+/* Enlace de salto al contenido: primer elemento enfocable */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 8px 16px;
+  background: var(--btn);
+  color: var(--btn-ink);
+  border-radius: var(--radius-sm);
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
+}
+
+/* Foco de teclado siempre visible: 2px de acento, separado 3px */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* El destino del enlace de salto recibe el foco programáticamente
+   (tabindex="-1"); no debe mostrar contorno propio. */
+#contenido:focus,
+#contenido:focus-visible {
+  outline: none;
+}
+
+/* ============================================================
+   BARRA SUPERIOR
+   ============================================================ */
+.topbar {
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+}
+.topbar__inner {
+  width: 100%;
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* ============================================================
+   PORTADA (hero)
+   ============================================================ */
+.hero {
+  max-width: var(--max-reading);
+  margin: 0 auto;
+  padding: var(--section-gap) var(--gutter) 0;
+}
+.hero__foto {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+}
+.hero__nombre {
+  font-size: var(--text-hero);
+  line-height: var(--leading-hero);
+  font-weight: var(--weight-semibold);
+  margin: 16px 0 8px;
+}
+/* Entradilla de portada: 20px / 30px (DESIGN-001 §2) */
+.hero__entradilla {
+  font-size: var(--text-lead);
+  line-height: var(--leading-lead);
+  color: var(--ink-2);
+  margin: 0 0 16px;
+}
+.hero__titular { margin: 0 0 8px; }
+
+/* Datos de contacto de la portada (SPEC-001 R3): el correo va en
+   monoespaciada (dato, DESIGN-001 §2) y con mailto (SPEC-001 §6). */
+.hero__contacto { margin: 16px 0 0; }
+.hero__contacto a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-strong);
+  /* La transición de color/borde vive en §5 (solo sin reduced-motion). */
+}
+/* El acento solo aparece en el subrayado de enlaces en hover (§1) */
+.hero__contacto a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* Píldora de disponibilidad (DESIGN-001 §4):
+   radio completo con punto del color de acento a la izquierda. */
+.pildora {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  color: var(--muted);
+}
+.pildora::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+}
+
+/* ============================================================
+   SECCIONES
+   ============================================================ */
+.seccion {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: var(--section-gap) var(--gutter) 0;
+}
+
+/* Antetítulo de sección: 12px mono, mayúsculas, +0.12em */
+.antetitulo {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+.seccion h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  font-weight: var(--weight-semibold);
+  margin: 0 0 24px;
+}
+
+/* Texto de lectura larga (p. ej. "Sobre mí") */
+.prosa {
+  max-width: var(--max-reading);
+  color: var(--ink-2);
+}
+
+/* ============================================================
+   SOBRE MÍ (SPEC-001 R1/R2)
+   ============================================================ */
+.sobre-mi {
+  max-width: var(--max-reading);
+}
+
+.sobre-mi__descripcion {
+  margin: 0 0 24px;
+}
+
+/* Datos personales: lista de definición con etiqueta / valor */
+.sobre-mi__datos {
+  margin: 0 0 24px;
+  padding: 0;
+}
+.sobre-mi__etiqueta {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  color: var(--muted);
+  margin: 0;
+}
+.sobre-mi__valor {
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+/* Subtítulos dentro de la sección (Contacto, Formación) */
+.sobre-mi__subtitulo {
+  font-size: var(--text-project);
+  line-height: var(--leading-project);
+  font-weight: var(--weight-semibold);
+  margin: 0 0 12px;
+}
+
+/* Contacto */
+.sobre-mi__contacto {
+  margin: 0 0 24px;
+}
+.sobre-mi__contacto-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.sobre-mi__contacto-lista a {
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  /* Transición en §5 (solo sin reduced-motion). */
+}
+.sobre-mi__contacto-lista a:hover {
+  border-bottom-color: var(--accent);
+}
+
+/* Formación */
+.sobre-mi__formacion {
+  margin: 0;
+}
+.formacion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.formacion__item {
+  margin: 0 0 8px;
+}
+
+/* ============================================================
+   PROYECTOS
+   ============================================================ */
+.proyectos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 700px) {
+  .proyectos { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .proyectos { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Marco de proyecto (DESIGN-001 §4): relleno 12px en accent-soft,
+   imagen 16:10 con radio 8px; hover: imagen +2% y borde más oscuro. */
+.proyecto__marco {
+  background: var(--accent-soft);
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  /* Transición del borde en §5 (solo sin reduced-motion). */
+}
+.proyecto__marco img {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  /* Transición del zoom en §5 (solo sin reduced-motion). */
+}
+.proyecto__marco:hover { border-color: var(--border-strong); }
+.proyecto__marco:hover img { transform: scale(1.02); }
+
+/* Nombre de proyecto destacado: 24px / 1.2 */
+.proyecto__nombre--destacado {
+  font-size: var(--text-project-featured);
+  line-height: var(--leading-project-featured);
+  font-weight: var(--weight-semibold);
+  margin: 12px 0 4px;
+}
+/* Nombre de proyecto en rejilla: 18px / 1.3 */
+.proyecto__nombre {
+  font-size: var(--text-project);
+  line-height: var(--leading-project);
+  font-weight: var(--weight-semibold);
+  margin: 12px 0 4px;
+}
+/* Resumen en rejilla: 15px / 24px */
+.proyecto__resumen {
+  font-size: var(--text-summary);
+  line-height: var(--leading-summary);
+  color: var(--ink-2);
+  margin: 0 0 8px;
+}
+
+/* Chip de tecnología (DESIGN-001 §4): mono 13px sobre surface, radio 8px */
+.chip {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  color: var(--muted);
+  /* Transición en §5 (solo sin reduced-motion). */
+}
+.chip:hover { background: var(--surface-2); }
+
+/* Metadatos: 13px monoespaciada / 20px */
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  color: var(--muted);
+}
+
+/* Etiqueta de estado (DESIGN-001 §4): píldora de 28px con icono Y texto;
+   el color semántico nunca va solo. */
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: var(--text-meta);
+  line-height: var(--leading-meta);
+  background: var(--surface);
+}
+.estado--ok   { color: var(--ok); }
+.estado--warn { color: var(--warn); }
+.estado--bad  { color: var(--bad); }
+
+/* ============================================================
+   BOTONES (DESIGN-001 §4): alto 44px (36px la variante pequeña)
+   ============================================================ */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-size: var(--text-summary);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  /* Transición en §5 (solo sin reduced-motion). */
+}
+.boton--primario {
+  background: var(--btn);
+  color: var(--btn-ink);
+}
+.boton--secundario {
+  background: var(--surface);
+  color: var(--ink);
+}
+.boton--secundario:hover { background: var(--surface-2); }
+.boton--pequeno { height: 36px; padding: 0 14px; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  margin-top: var(--section-gap);
+  border-top: 1px solid var(--border);
+}
+.footer__inner {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: 32px var(--gutter);
+  color: var(--muted);
+}
+
+/* ============================================================
+   5. MOVIMIENTO — solo tres tipos de animación en todo el
+   producto (DESIGN-001 §5):
+     1. Cambios de color en interactivos — 150ms.
+     2. Aparición/desaparición de la identidad en la barra — 200ms.
+     3. Entrada escalonada de la portada — 400ms, 60ms de stagger.
+
+   Con prefers-reduced-motion activado NO se ejecuta ninguna:
+   las transiciones de los componentes se declaran dentro de la
+   media query "no-preference" (ver más abajo), y aquí solo
+   queda la animación de entrada de la portada.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  /* 1. Cambios de color en elementos interactivos — 150ms */
+  .hero__contacto a {
+    transition: color var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease);
+  }
+  .sobre-mi__contacto-lista a {
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+  .proyecto__marco {
+    transition: border-color var(--dur-fast) var(--ease);
+  }
+  .proyecto__marco img {
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .chip {
+    transition: background-color var(--dur-fast) var(--ease);
+  }
+  .boton {
+    transition: background-color var(--dur-fast) var(--ease),
+                border-color var(--dur-fast) var(--ease);
+  }
+
+  /* 3. Entrada escalonada de la portada: 400ms, 60ms entre elementos */
+  .hero > * {
+    animation: entrada var(--dur-slow) var(--ease) both;
+  }
+  .hero > *:nth-child(1) { animation-delay: 0ms; }
+  .hero > *:nth-child(2) { animation-delay: var(--stagger); }
+  .hero > *:nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+  .hero > *:nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+  .hero > *:nth-child(5) { animation-delay: calc(var(--stagger) * 4); }
+}
+@keyframes entrada {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
