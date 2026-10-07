@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portfolio de Javier Motos González — estudiante de grado en informática, disponible para prácticas en desarrollo de software.">
+  <title>Javier Motos González — Portfolio</title>
+
+  <!-- Tipografía (DESIGN-001 §2): Geist para texto, Geist Mono para datos.
+       Pesos en uso: 400, 500 y 600 (nunca 700). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Enlace de salto al contenido: primer elemento enfocable (DESIGN-001 §6) -->
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- Barra superior -->
+  <header class="topbar">
+    <div class="topbar__inner">
+      <a class="topbar__identity" href="#" data-profile="nombre">
+        <!-- La identidad se rellena desde JS con data/profile.json -->
+      </a>
+    </div>
+  </header>
+
+  <!-- tabindex="-1": el enlace de salto puede mover el foco aquí
+       (DESIGN-001 §6), sin entrar en el orden de tabulación. -->
+  <main id="contenido" tabindex="-1">
+    <!-- Portada: foto, nombre, titular de disponibilidad y datos de contacto (SPEC-001 R3) -->
+    <section class="hero" aria-labelledby="hero-nombre">
+      <img class="hero__foto" data-profile="foto" src="" alt="" width="96" height="96">
+      <h1 class="hero__nombre" id="hero-nombre" data-profile="nombre"></h1>
+      <p class="hero__entradilla" data-profile="descripcion"></p>
+      <p class="hero__titular">
+        <span class="pildora" data-profile="titular"></span>
+      </p>
+      <p class="hero__contacto">
+        <a data-profile="email" href="#" class="mono"></a>
+      </p>
+    </section>
+
+    <!-- Sobre mí: datos personales, descripción, contacto y fechas relevantes (SPEC-001 R1/R2) -->
+    <section class="seccion" aria-labelledby="sobre-mi-titulo">
+      <p class="antetitulo">Sobre mí</p>
+      <h2 id="sobre-mi-titulo">Sobre mí</h2>
+      <div class="sobre-mi" data-profile="sobre-mi">
+        <!-- El contenido se rellena desde JS con data/profile.json:
+             descripción, datos personales, contacto y formación. -->
+      </div>
+    </section>
+
+    <!-- Proyectos: máximo 6 (SPEC-001 R4) -->
+    <section class="seccion" aria-labelledby="proyectos-titulo">
+      <p class="antetitulo">Proyectos</p>
+      <h2 id="proyectos-titulo">Proyectos</h2>
+      <div class="proyectos" data-projects></div>
+    </section>
+  </main>
+
+  <!-- Footer: datos de contacto de nuevo (SPEC-001 §8) -->
+  <footer class="footer">
+    <div class="footer__inner" data-profile="footer"></div>
+  </footer>
+
+  <!-- Capa de datos (carga y parseo de los JSON) + renderizado -->
+  <script src="js/data/loader.js" defer></script>
+  <script src="js/data/profile.js" defer></script>
+  <script src="js/data/projects.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
