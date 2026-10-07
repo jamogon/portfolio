@@ -1,0 +1,19 @@
+{
+  "nombre": "Javier Motos González",
+  "titular": "Disponible para prácticas",
+  "descripcion": "Estudiante de grado en informática con pasión por el desarrollo de software. Busco oportunidad de prácticas para aplicar mis conocimientos y seguir aprendiendo en un entorno profesional.",
+  "foto": "assets/profile.png",
+  "email": "javi@secture.com",
+  "formacion": [
+    {
+      "titulo": "Grado en Ingeniería Informática",
+      "centro": "Universidad",
+      "fechaInicio": "2023",
+      "fechaFin": "Actualidad"
+    }
+  ],
+  "redes": {
+    "linkedin": "https://www.linkedin.com/in/javiermotosgonzalez/",
+    "github": "https://github.com/javiermotos"
+  }
+}
