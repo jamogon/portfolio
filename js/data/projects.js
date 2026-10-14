@@ -42,17 +42,34 @@ function prepararProyecto(raw) {
 }
 
 /**
- * Carga data/projects.json y devuelve la lista de proyectos
- * preparada para renderizar:
- * - Si el JSON es inválido o no se puede cargar → lista vacía
- *   (contenido por defecto, SPEC-001 §10).
+ * Devuelve la lista de proyectos preparada para renderizar:
+ * - Fix CLS (QA-LIGHTHOUSE-001 ISSUE-1): lee primero los datos inline
+ *   de index.html (window.__PROYECTOS__), disponibles de forma SÍNCRONA
+ *   antes del primer paint, para que la sección de proyectos se pinte
+ *   en el primer render sin desplazar el contenido.
+ * - Si el bloque inline no existe o es inválido → fetch de
+ *   data/projects.json; si el JSON es inválido o no se puede cargar
+ *   → lista vacía (contenido por defecto, SPEC-001 §10).
  * - Proyectos incompletos → descartados (con aviso en consola).
  * - Máximo 6 proyectos (SPEC-001 R4).
  *
  * @returns {Promise<{proyectos: object[], error: DataError|null}>}
  */
 async function cargarProyectos() {
-  const { datos, error } = await cargarJSONSeguro(PROJECTS_URL, PROJECTS_POR_DEFECTO);
+  const inline =
+    typeof window !== "undefined" && window.__PROYECTOS__ && typeof window.__PROYECTOS__ === "object"
+      ? window.__PROYECTOS__
+      : null;
+
+  let datos;
+  let error = null;
+  if (inline) {
+    datos = inline;
+  } else {
+    const resultado = await cargarJSONSeguro(PROJECTS_URL, PROJECTS_POR_DEFECTO);
+    datos = resultado.datos;
+    error = resultado.error;
+  }
 
   const crudos = Array.isArray(datos && datos.proyectos) ? datos.proyectos : [];
   const proyectos = [];
