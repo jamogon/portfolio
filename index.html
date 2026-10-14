@@ -6,13 +6,136 @@
   <meta name="description" content="Portfolio de Javier Motos González — estudiante de grado en informática, disponible para prácticas en desarrollo de software.">
   <title>Javier Motos González — Portfolio</title>
 
+  <!-- Favicon (QA-LIGHTHOUSE-001, ISSUE-4): SVG para navegadores modernos
+       e ICO multi-tamaño (16/32/48) como fallback. El archivo favicon.ico
+       en la raíz también responde a la petición automática del navegador,
+       eliminando el 404 que bajaba Best Practices a 96. -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+
   <!-- Tipografía (DESIGN-001 §2): Geist para texto, Geist Mono para datos.
-       Pesos en uso: 400, 500 y 600 (nunca 700). -->
+       Pesos en uso: 400, 500 y 600 (nunca 700).
+       Carga NO bloqueante (QA-LIGHTHOUSE-001, ISSUE-2): la hoja de Google
+       Fonts se solicita con media="print" y pasa a media="all" al cargar,
+       por lo que no retrasa el primer render. Las fuentes woff2 se descargan
+       en paralelo gracias al preconnect y se aplican en cuanto llegan
+       (display=swap: el texto se pinta de inmediato con el fallback). -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap"
+        media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+  </noscript>
 
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- CSS crítico inline (tokens + base + barra + portada): lo necesario
+       para el primer paint sin esperar a la hoja externa. El resto de
+       styles.css (secciones, proyectos, footer, movimiento) carga en
+       paralelo con media="print" y se aplica al llegar, sin bloquear. -->
+  <style>
+    :root {
+      --bg: #FFFFFF; --ink: #0A0A0A; --ink-2: #404040; --muted: #595959;
+      --surface: #F5F5F5; --surface-2: #EDEDED; --border: #E5E5E5;
+      --border-strong: #D4D4D4; --btn: #171717; --btn-ink: #FAFAFA;
+      --accent: #6D28D9; --accent-soft: #EDE9FE;
+      --ok: #047857; --warn: #A16207; --bad: #B91C1C;
+      --font-text: "Geist", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --weight-regular: 400; --weight-medium: 500; --weight-semibold: 600;
+      --text-hero: clamp(40px, 6vw, 64px); --leading-hero: 1.05;
+      --text-lead: 20px; --leading-lead: 30px;
+      --text-body: 17px; --leading-body: 28px;
+      --text-meta: 13px; --leading-meta: 20px;
+      --max-content: 1120px; --max-reading: 720px;
+      --gutter: 24px; --section-gap: 64px; --topbar-h: 56px;
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-full: 9999px;
+    }
+    @media (min-width: 900px) { :root { --gutter: 48px; --section-gap: 96px; } }
+    html[data-accent="azul"]     { --accent: #1D4ED8; --accent-soft: #DBEAFE; }
+    html[data-accent="verde"]    { --accent: #047857; --accent-soft: #D1FAE5; }
+    html[data-accent="naranja"]  { --accent: #C2410C; --accent-soft: #FFEDD5; }
+    html[data-accent="rosa"]     { --accent: #BE185D; --accent-soft: #FCE7F3; }
+    html[data-accent="amarillo"] { --accent: #A16207; --accent-soft: #FEF3C7; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: var(--font-text); font-size: var(--text-body);
+      line-height: var(--leading-body); font-weight: var(--weight-regular);
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    .mono {
+      font-family: var(--font-mono);
+      font-size: var(--text-meta); line-height: var(--leading-meta);
+    }
+    .skip-link {
+      position: absolute; left: -9999px; top: 0;
+      padding: 8px 16px; background: var(--btn); color: var(--btn-ink);
+      border-radius: var(--radius-sm); z-index: 100;
+    }
+    .skip-link:focus { left: 8px; top: 8px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    #contenido:focus, #contenido:focus-visible { outline: none; }
+    .topbar {
+      height: var(--topbar-h); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+    }
+    .topbar__inner {
+      width: 100%; max-width: var(--max-content);
+      margin: 0 auto; padding: 0 var(--gutter);
+    }
+    .hero {
+      max-width: var(--max-reading); margin: 0 auto;
+      padding: var(--section-gap) var(--gutter) 0;
+    }
+    .hero__foto {
+      width: 96px; height: 96px;
+      border-radius: var(--radius-full); object-fit: cover;
+    }
+    .hero__nombre {
+      font-size: var(--text-hero); line-height: var(--leading-hero);
+      font-weight: var(--weight-semibold); margin: 16px 0 8px;
+    }
+    .hero__entradilla {
+      font-size: var(--text-lead); line-height: var(--leading-lead);
+      color: var(--ink-2); margin: 0 0 16px;
+    }
+    .hero__titular { margin: 0 0 8px; }
+    .hero__contacto { margin: 16px 0 0; }
+    .hero__contacto a {
+      color: var(--ink); text-decoration: none;
+      border-bottom: 1px solid var(--border-strong);
+    }
+    .hero__contacto a:hover { border-bottom-color: var(--accent); }
+    .pildora {
+      display: inline-flex; align-items: center; gap: 8px;
+      height: 28px; padding: 0 14px; border-radius: var(--radius-full);
+      background: var(--surface); font-family: var(--font-mono);
+      font-size: var(--text-meta); line-height: var(--leading-meta);
+      color: var(--muted);
+    }
+    .pildora::before {
+      content: ""; width: 8px; height: 8px;
+      border-radius: var(--radius-full); background: var(--accent);
+    }
+  </style>
+  <link rel="stylesheet" href="css/styles.css" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="css/styles.css">
+  </noscript>
+
+  <!-- Datos inline (fix CLS, QA-LIGHTHOUSE-001 ISSUE-1): el contenido
+       de data/profile.json y data/projects.json va incrustado aquí para
+       que la página lo pinte ANTES del primer paint, sin fetch ni
+       saltos de layout. El contenido se sigue editando SOLO en los
+       JSON (SPEC-001 §6); tras editarlos, regenerar estos bloques con:
+         node js/tests/build-inline-data.cjs -->
+  <script>window.__PROFILE__ = {"nombre":"Javier Motos González","titular":"Disponible para prácticas","descripcion":"Estudiante de grado en informática con pasión por el desarrollo de software. Busco oportunidad de prácticas para aplicar mis conocimientos y seguir aprendiendo en un entorno profesional.","foto":"assets/profile.png","email":"javi@secture.com","formacion":[{"titulo":"Grado en Ingeniería Informática","centro":"Universidad","fechaInicio":"2023","fechaFin":"Actualidad"}],"redes":{"linkedin":"https://www.linkedin.com/in/javiermotosgonzalez/","github":"https://github.com/javiermotos"}};</script>
+  <script>window.__PROYECTOS__ = {"proyectos":[{"id":"gestor-tareas","nombre":"Gestor de tareas Android","descripcion":"App para organizar las entregas por asignatura, con recordatorios. La usan 12 compañeros de clase desde marzo.","tecnologia":"Kotlin","imagen":"assets/project-01.jpg","enlace":"https://github.com/alex-ejemplo/gestor-tareas","fecha":"2026-05"},{"id":"tienda-discos","nombre":"Tienda de discos","descripcion":"Catálogo con carrito para la tienda de un amigo que vendía por Instagram. 120 discos catalogados.","tecnologia":"JavaScript","imagen":"assets/project-02.jpg","enlace":"https://github.com/alex-ejemplo/tienda-discos","fecha":"2026-01"},{"id":"api-reservas","nombre":"API de reservas","descripcion":"API REST para reservar pistas deportivas, con autenticación y documentación.","tecnologia":"Java","imagen":"assets/project-03.jpg","enlace":"https://github.com/alex-ejemplo/api-reservas","fecha":"2026-03"},{"id":"recetas","nombre":"App de recetas","descripcion":"Recetario con lista de la compra compartida, sincronizada entre varios móviles.","tecnologia":"Flutter","imagen":"assets/project-04.jpg","enlace":"https://github.com/alex-ejemplo/recetas","fecha":"2025-06"}]};</script>
 </head>
 <body>
   <!-- Enlace de salto al contenido: primer elemento enfocable (DESIGN-001 §6) -->
@@ -66,10 +189,14 @@
     <div class="footer__inner" data-profile="footer"></div>
   </footer>
 
-  <!-- Capa de datos (carga y parseo de los JSON) + renderizado -->
-  <script src="js/data/loader.js" defer></script>
-  <script src="js/data/profile.js" defer></script>
-  <script src="js/data/projects.js" defer></script>
-  <script src="js/main.js" defer></script>
+  <!-- Capa de datos (carga y parseo de los JSON) + renderizado.
+       Sin defer a propósito (fix CLS, QA-LIGHTHOUSE-001 ISSUE-1):
+       los datos ya viajan inline en el <head> y el render es
+       síncrono, así que el primer paint llega con todo el contenido
+       puesto y no hay saltos de layout. -->
+  <script src="js/data/loader.js"></script>
+  <script src="js/data/profile.js"></script>
+  <script src="js/data/projects.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
