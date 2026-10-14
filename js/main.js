@@ -251,9 +251,22 @@ function renderAvisoError() {
 }
 
 /* ---------- Arranque ---------- */
+/* Fix CLS (QA-LIGHTHOUSE-001 ISSUE-1): la página se pinta completa
+   ANTES del primer paint. Los datos viajan inline en index.html
+   (window.__PROFILE__ / window.__PROYECTOS__) y las cargadoras los
+   resuelven de forma síncrona, así que la primera composición ya
+   incluye portada, "Sobre mí", proyectos y footer: no hay saltos
+   de layout (objetivo: CLS < 0.1).
+
+   Este script se carga SIN defer a propósito: el parseo del documento
+   se pausa aquí un instante (el trabajo es mínimo y los datos ya están
+   en memoria) y el primer paint llega con el contenido puesto. Si los
+   datos inline faltaran, las cargadoras recurrirían al fetch de los
+   JSON y el render ocurriría tras la carga (comportamiento anterior).
+
+   Cada módulo resuelve con contenido por defecto si su fuente es
+   inválida (nunca rompen la página — SPEC-001 §10). */
 async function init() {
-  // Carga en paralelo; cada módulo resuelve con contenido por
-  // defecto si su JSON es inválido (nunca rompen la página).
   const [{ profile, error: errorPerfil }, { proyectos, error: errorProyectos }] =
     await Promise.all([cargarPerfil(), cargarProyectos()]);
 
