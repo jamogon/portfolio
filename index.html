@@ -32,7 +32,38 @@
           href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
   </noscript>
 
-  <!-- CSS completo: carga tradicional (sin media="print" para máxima compatibilidad) -->
+  <!-- CSS crítico inline: tokens y base para el primer paint (DESIGN-001) -->
+  <style>
+    :root {
+      --bg: #FFFFFF; --ink: #0A0A0A; --ink-2: #404040; --muted: #595959;
+      --surface: #F5F5F5; --surface-2: #EDEDED; --border: #E5E5E5;
+      --border-strong: #D4D4D4; --btn: #171717; --btn-ink: #FAFAFA;
+      --accent: #6D28D9; --accent-soft: #EDE9FE;
+      --font-text: "Geist", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+      --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --text-hero: clamp(40px, 6vw, 64px); --leading-hero: 1.05;
+      --text-lead: 20px; --leading-lead: 30px;
+      --text-body: 17px; --leading-body: 28px;
+      --max-content: 1120px; --max-reading: 720px;
+      --gutter: 24px; --section-gap: 64px;
+    }
+    @media (min-width: 900px) { :root { --gutter: 48px; --section-gap: 96px; } }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: var(--font-text); font-size: var(--text-body);
+      line-height: var(--leading-body);
+    }
+    .topbar { height: 56px; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+    .topbar__inner { width: 100%; max-width: var(--max-content); margin: 0 auto; padding: 0 var(--gutter); }
+    .hero { max-width: var(--max-reading); margin: 0 auto; padding: var(--section-gap) var(--gutter) 0; }
+    .hero__foto { width: 96px; height: 96px; border-radius: 9999px; object-fit: cover; }
+    .hero__nombre { font-size: var(--text-hero); line-height: var(--leading-hero); font-weight: 600; margin: 16px 0 8px; }
+    .hero__entradilla { font-size: var(--text-lead); line-height: var(--leading-lead); color: var(--ink-2); margin: 0 0 16px; }
+    .pildora { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 14px; border-radius: 9999px; background: var(--surface); font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+    .pildora::before { content: ""; width: 8px; height: 8px; border-radius: 9999px; background: var(--accent); }
+  </style>
+  <!-- CSS completo: carga tradicional -->
   <link rel="stylesheet" href="css/styles.css">
 
   <!-- Datos inline (fix CLS, QA-LIGHTHOUSE-001 ISSUE-1): el contenido
