@@ -7,6 +7,11 @@
 
 "use strict";
 
+/* Atributos de seguridad para TODOS los enlaces externos (BR2):
+   abren en nueva pestaña (target="_blank") y llevan
+   rel="noopener noreferrer nofollow". */
+const REL_EXTERNO = "noopener noreferrer nofollow";
+
 /* ---------- Portada + Sobre mí + Footer ---------- */
 function renderPerfil(profile) {
   // Nombre (barra superior y portada)
@@ -97,13 +102,14 @@ function renderPerfil(profile) {
       contactoLista.appendChild(li);
     }
 
-    // Redes sociales (enlaces externos, nueva pestaña, nofollow)
+    // Redes sociales (enlaces externos: nueva pestaña y
+    // rel="noopener noreferrer nofollow" — BR2)
     for (const [red, url] of Object.entries(profile.redes)) {
       const li = document.createElement("li");
       const a = document.createElement("a");
       a.href = url;
       a.target = "_blank";
-      a.rel = "nofollow noopener";
+      a.rel = REL_EXTERNO;
       a.textContent = red;
       li.appendChild(a);
       contactoLista.appendChild(li);
@@ -161,7 +167,7 @@ function renderPerfil(profile) {
       const a = document.createElement("a");
       a.href = url;
       a.target = "_blank";
-      a.rel = "nofollow noopener";
+      a.rel = REL_EXTERNO;
       a.textContent = red;
       p.append(" · ", a);
     }
@@ -191,10 +197,11 @@ function renderProyectos(proyectos) {
       // La imagen enlaza al repositorio (SPEC-001 §9).
       // El alt de la imagen ya describe el destino del enlace,
       // así que el <a> no necesita aria-label adicional.
+      // Enlace externo: target="_blank" + rel BR2.
       const link = document.createElement("a");
       link.href = p.enlace;
       link.target = "_blank";
-      link.rel = "nofollow noopener";
+      link.rel = REL_EXTERNO;
       link.appendChild(marco);
       card.appendChild(link);
     } else {
@@ -230,7 +237,7 @@ function renderProyectos(proyectos) {
     const repo = document.createElement("a");
     repo.href = p.enlace;
     repo.target = "_blank";
-    repo.rel = "nofollow noopener";
+    repo.rel = REL_EXTERNO;
     repo.textContent = "GitHub";
     meta.appendChild(repo);
 
