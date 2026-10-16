@@ -7,8 +7,9 @@
      [B] Movimiento: TODA animación/transición respeta
          prefers-reduced-motion (DESIGN-001 §5)
      [C] Imágenes: formatos, dimensiones, lazy loading, alt
-     [D] Enlaces: externos con target=_blank + rel nofollow,
-         mailto en el email, skip-link interno
+     [D] Enlaces: externos con target=_blank + rel
+         "noopener noreferrer nofollow" (BR2), mailto en el
+         email, skip-link interno
      [E] Edge cases de la capa de datos (SPEC-001 §10)
      [F] Tipografía multi-navegador: stacks con fallback,
          display=swap, pesos 400/500/600 (DESIGN-001 §2)
@@ -199,7 +200,7 @@ const tags = parseHTML(html);
 
   await test("Las imágenes estáticas tienen atributo alt", () => {
     for (const t of tags.filter((x) => x.nombre === "img")) {
-      assert("alt" in t.attrs, `<img> sin alt (src="${t.attrs.src || "?"}")`);
+      assert("alt" in t.attrs, `<img> sin alt (src="${t.attrs.src || "?"})"`);
     }
   });
 
@@ -362,11 +363,26 @@ const tags = parseHTML(html);
      ============================================================ */
   console.log("\n[D] Enlaces (externos, mailto, internos)");
 
-  await test("Los enlaces externos del JS usan target=_blank y rel con nofollow", () => {
+  await test("Los enlaces externos del JS usan target=_blank y rel con noopener noreferrer nofollow (BR2)", () => {
     const externos = mainJs.match(/a\.target\s*=\s*"_blank"|link\.target\s*=\s*"_blank"|repo\.target\s*=\s*"_blank"/g) || [];
-    const rels = mainJs.match(/rel\s*=\s*"nofollow noopener"/g) || [];
     assert(externos.length >= 3, `solo ${externos.length} enlaces con target=_blank`);
-    assert(rels.length >= 3, `solo ${rels.length} enlaces con rel nofollow`);
+    // BR2: el rel se centraliza en la constante REL_EXTERNO y se aplica
+    // en todos los enlaces externos (redes, footer, imagen y repo de proyecto).
+    const definicion = /REL_EXTERNO\s*=\s*"noopener noreferrer nofollow"/.test(mainJs);
+    assert(definicion, 'falta la constante REL_EXTERNO = "noopener noreferrer nofollow"');
+    const usos = mainJs.match(/\.rel\s*=\s*REL_EXTERNO/g) || [];
+    assert(usos.length >= 3, `solo ${usos.length} enlaces con rel = REL_EXTERNO`);
+  });
+
+  await test("Ningún enlace externo queda con el rel antiguo (sin noreferrer)", () => {
+    // Todo rel de enlace externo debe incluir noopener, noreferrer y nofollow (BR2).
+    const rels = mainJs.match(/\.rel\s*=\s*"([^"]*)"/g) || [];
+    for (const r of rels) {
+      const valor = r.replace(/^\.rel\s*=\s*"|"$/g, "");
+      for (const token of ["noopener", "noreferrer", "nofollow"]) {
+        assert(valor.split(/\s+/).includes(token), `rel="${valor}" sin ${token} (BR2)`);
+      }
+    }
   });
 
   await test("El email usa mailto (SPEC-001 §6)", () => {
